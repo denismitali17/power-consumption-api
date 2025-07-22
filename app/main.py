@@ -5,7 +5,14 @@ from typing import List, Optional
 import joblib
 import numpy as np
 import pandas as pd
+import os
+from pathlib import Path
 from schemas.power_consumption import PowerConsumptionInput, PowerConsumptionOutput
+
+# Get the base directory
+BASE_DIR = Path(__file__).resolve().parent.parent
+MODEL_PATH = os.path.join(BASE_DIR, 'app', 'models', 'power_consumption_model.pkl')
+SCALER_PATH = os.path.join(BASE_DIR, 'app', 'models', 'scaler.pkl')
 
 app = FastAPI(
     title="Power Consumption API",
@@ -18,7 +25,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,10 +33,24 @@ app.add_middleware(
 
 
 try:
-    model = joblib.load('app/models/power_consumption_model.pkl')
-    scaler = joblib.load('app/models/scaler.pkl')
+    print(f"Loading model from: {MODEL_PATH}")
+    print(f"Loading scaler from: {SCALER_PATH}")
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"Directory contents: {os.listdir(os.path.dirname(MODEL_PATH))}")
+    
+    model = joblib.load(MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
+    print("Model and scaler loaded successfully!")
 except Exception as e:
-    raise RuntimeError(f"Error loading model or scaler: {str(e)}")
+    error_msg = f"""
+    Error loading model or scaler: {str(e)}
+    Current directory: {os.getcwd()}
+    Model path: {MODEL_PATH}
+    Scaler path: {SCALER_PATH}
+    Directory exists: {os.path.exists(os.path.dirname(MODEL_PATH))}
+    """
+    print(error_msg)
+    raise RuntimeError(error_msg)
 
 @app.get("/")
 async def root():
@@ -54,10 +75,8 @@ async def predict_power_consumption(input_data: PowerConsumptionInput):
     - **month**: Month (1-12)
     """
     try:
-        
         input_dict = input_data.dict()
         input_df = pd.DataFrame([input_dict])
-        
         
         feature_order = [
             'temperature', 'humidity', 'wind_speed', 
@@ -66,9 +85,7 @@ async def predict_power_consumption(input_data: PowerConsumptionInput):
         ]
         input_df = input_df[feature_order]
         
-        
         input_scaled = scaler.transform(input_df)
-        
         
         prediction = model.predict(input_scaled)
         
@@ -85,4 +102,4 @@ async def predict_power_consumption(input_data: PowerConsumptionInput):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
