@@ -10,7 +10,7 @@ from pathlib import Path
 from schemas.power_consumption import PowerConsumptionInput, PowerConsumptionOutput
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-MODEL_PATH = os.path.join(BASE_DIR, 'app', 'models', 'optimized_model.pkl')
+MODEL_PATH = os.path.join(BASE_DIR, 'app', 'models', 'power_consumption_model.pkl')
 SCALER_PATH = os.path.join(BASE_DIR, 'app', 'models', 'scaler.pkl')
 
 app = FastAPI(
