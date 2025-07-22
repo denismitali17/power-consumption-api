@@ -5,7 +5,7 @@ from typing import List, Optional
 import joblib
 import numpy as np
 import pandas as pd
-from models.schemas import PowerConsumptionInput, PowerConsumptionOutput
+from schemas.power_consumption import PowerConsumptionInput, PowerConsumptionOutput
 
 app = FastAPI(
     title="Power Consumption API",
