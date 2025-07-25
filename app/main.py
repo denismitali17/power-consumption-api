@@ -75,12 +75,27 @@ async def predict_power_consumption(input_data: PowerConsumptionInput):
     """
     try:
         input_dict = input_data.dict()
-        input_df = pd.DataFrame([input_dict])
+        
+        feature_mapping = {
+            'temperature': 'Temperature',
+            'humidity': 'Humidity',
+            'wind_speed': 'WindSpeed',
+            'general_diffuse_flows': 'GeneralDiffuseFlows',
+            'diffuse_flows': 'DiffuseFlows',
+            'hour': 'Hour',
+            'day_of_week': 'DayOfWeek',
+            'month': 'Month'
+        }
+        
+        input_df = pd.DataFrame([{
+            model_name: input_dict[api_name] 
+            for api_name, model_name in feature_mapping.items()
+        }])
         
         feature_order = [
-            'temperature', 'humidity', 'wind_speed', 
-            'general_diffuse_flows', 'diffuse_flows',
-            'hour', 'day_of_week', 'month'
+            'Temperature', 'Humidity', 'WindSpeed', 
+            'GeneralDiffuseFlows', 'DiffuseFlows',
+            'Hour', 'DayOfWeek', 'Month'
         ]
         input_df = input_df[feature_order]
         
