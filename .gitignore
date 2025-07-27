@@ -1,0 +1,5 @@
+echo "__pycache__/" > .gitignore
+echo "*.py[cod]" >> .gitignore
+echo "*.pkl" >> .gitignore
+echo "*.joblib" >> .gitignore
+echo "venv/" >> .gitignore

@@ -23,8 +23,8 @@ app.add_middleware(
 
 # Load model and scaler
 try:
-    model = joblib.load('power_consumption_model.pkl')
-    scaler = joblib.load('scaler.pkl')
+    model = joblib.load('app/models/power_consumption_model.joblib')
+    scaler = joblib.load('app/models/scaler.pkl')
     print(" Model and scaler loaded successfully")
 except Exception as e:
     print(f" Error loading model or scaler: {str(e)}")
